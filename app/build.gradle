@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.gfxconsultoria.users'
+    namespace 'space.jacksonmonteiro.users'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.gfxconsultoria.users"
+        applicationId "space.jacksonmonteiro.users"
         minSdk 24
         targetSdk 34
         versionCode 1

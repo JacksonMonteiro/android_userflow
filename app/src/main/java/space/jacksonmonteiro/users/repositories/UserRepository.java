@@ -1,7 +1,6 @@
-package com.gfxconsultoria.users.repositories;
+package space.jacksonmonteiro.users.repositories;
 /*
 Created By Jackson Monteiro on 11/01/2024
-Copyright (c) 2024 GFX Consultoria
 */
 
 
@@ -10,18 +9,19 @@ import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
 
-import com.gfxconsultoria.users.data.local.UserDao;
-import com.gfxconsultoria.users.data.local.UserDatabase;
-import com.gfxconsultoria.users.models.User;
+import space.jacksonmonteiro.users.data.local.UserDao;
+import space.jacksonmonteiro.users.data.local.UserDatabase;
+import space.jacksonmonteiro.users.models.User;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class UserRepository {
     private UserDao userDao;
-    private LiveData<ArrayList<User>> users;
+    private LiveData<List<User>> users;
 
     public UserRepository(Application application) {
         UserDatabase database = UserDatabase.getInstance(application);
+        userDao = database.userDao();
         users = userDao.getAllUsers();
     }
 
@@ -41,7 +41,7 @@ public class UserRepository {
         new DeleteAllUsersAsyncTask(userDao).execute();
     }
 
-    public LiveData<ArrayList<User>> getAllUsers() {
+    public LiveData<List<User>> getAllUsers() {
         return users;
     }
 

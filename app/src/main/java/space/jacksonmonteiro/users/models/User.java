@@ -1,4 +1,4 @@
-package com.gfxconsultoria.users.models;
+package space.jacksonmonteiro.users.models;
 
 /*
 Created By Jackson Monteiro on 11/01/2024

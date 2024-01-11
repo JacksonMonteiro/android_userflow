@@ -1,4 +1,4 @@
-package com.gfxconsultoria.users;
+package space.jacksonmonteiro.users;
 
 import org.junit.Test;
 
