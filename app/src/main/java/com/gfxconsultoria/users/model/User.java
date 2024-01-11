@@ -10,8 +10,8 @@ import androidx.room.PrimaryKey;
 
 import java.util.Date;
 
-@Entity(tableName = "usuarios")
-public class Usuario {
+@Entity(tableName = "users")
+public class User {
     @PrimaryKey(autoGenerate = true)
     private int id;
 
@@ -26,7 +26,7 @@ public class Usuario {
     private String tipo;
     private String cpfCnpj;
 
-    public Usuario(String nome, String username, String password, String foto, String endereco, String email, Date dataNascimento, String sexo, String tipo, String cpfCnpj) {
+    public User(String nome, String username, String password, String foto, String endereco, String email, Date dataNascimento, String sexo, String tipo, String cpfCnpj) {
         this.nome = nome;
         this.username = username;
         this.password = password;
