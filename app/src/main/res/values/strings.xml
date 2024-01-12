@@ -4,4 +4,16 @@
     <string name="username_label">Nome de usuário:</string>
     <string name="cpf_label">CPF</string>
     <string name="cnpj_label">CNPJ:</string>
+
+    <string-array name="sexo">
+        <item>Selecione seu Sexo</item>
+        <item>Masculino</item>
+        <item>Feminino</item>
+    </string-array>
+
+    <string-array name="tipo">
+        <item>Você é pessoa física ou jurídica?</item>
+        <item>Pessoa Física</item>
+        <item>Pessoa Jurídica</item>
+    </string-array>
 </resources>
