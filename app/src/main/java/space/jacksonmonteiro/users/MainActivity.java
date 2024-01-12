@@ -1,11 +1,13 @@
 package space.jacksonmonteiro.users;
 
 import android.os.Bundle;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import space.jacksonmonteiro.users.ui.user.adapter.UserAdapter;
 import space.jacksonmonteiro.users.viewmodels.UserViewModel;
 
 public class MainActivity extends AppCompatActivity {
@@ -16,11 +18,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        final UserAdapter adapter = new UserAdapter();
+
+        RecyclerView recyclerView = findViewById(R.id.usersRecyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(adapter);
+
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         userViewModel.getAllUsers().observe(
                 this,
                 users -> {
-                    Toast.makeText(this, "All users loaded successful", Toast.LENGTH_LONG).show();
+                    adapter.setUsers(users);
                 }
         );
     }
