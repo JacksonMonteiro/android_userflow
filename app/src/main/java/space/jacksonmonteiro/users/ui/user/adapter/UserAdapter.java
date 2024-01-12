@@ -35,7 +35,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> {
 
         holder.tvName.setText(currentUser.getNome());
         holder.tvUsername.setText(currentUser.getUsername());
-        holder.tvEmail.setText(currentUser.getEmail());
         holder.tvCpfCnpj.setText(currentUser.getCpfCnpj());
     }
 
@@ -52,7 +51,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> {
     class UserHolder extends RecyclerView.ViewHolder {
         private TextView tvName;
         private TextView tvUsername;
-        private TextView tvEmail;
         private TextView tvCpfCnpj;
 
         public UserHolder(@NonNull View itemView) {
@@ -60,7 +58,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> {
 
             tvName = itemView.findViewById(R.id.nameValue);
             tvUsername = itemView.findViewById(R.id.usernameValue);
-            tvEmail = itemView.findViewById(R.id.emailValue);
             tvCpfCnpj = itemView.findViewById(R.id.cpfCnpjValue);
         }
     }
