@@ -1,4 +1,4 @@
-package com.gfxconsultoria.users;
+package space.jacksonmonteiro.users;
 
 import android.content.Context;
 
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.gfxconsultoria.users", appContext.getPackageName());
+        assertEquals("space.jacksonmonteiro.users", appContext.getPackageName());
     }
 }

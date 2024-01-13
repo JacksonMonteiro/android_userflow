@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">Users</string>
+    <string name="username_label">Usuário:</string>
+    <string name="cpf_label">CPF</string>
+    <string name="cnpj_label">CNPJ:</string>
+    <string name="etfilter_hint">Filtrar pelo nome...</string>
+
+    <string-array name="sexo">
+        <item>Selecione seu Sexo</item>
+        <item>Masculino</item>
+        <item>Feminino</item>
+    </string-array>
+
+    <string-array name="tipo">
+        <item>Você é pessoa física ou jurídica?</item>
+        <item>Pessoa Física</item>
+        <item>Pessoa Jurídica</item>
+    </string-array>
 </resources>
