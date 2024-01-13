@@ -1,6 +1,7 @@
 package space.jacksonmonteiro.users.ui.user;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,9 +10,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -20,10 +23,12 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import space.jacksonmonteiro.users.R;
-import space.jacksonmonteiro.users.utils.DateUtils;
+import space.jacksonmonteiro.users.utils.DateUtil;
+import space.jacksonmonteiro.users.utils.ImageUtil;
 import space.jacksonmonteiro.users.utils.MaskUtil;
 
 public class CreateUserActivity extends AppCompatActivity {
+    private ImageView profileImage;
     private View view;
     private DatePickerDialog datePickerDialog;
     private Spinner spinnerSexo, spinnerTipo;
@@ -37,6 +42,9 @@ public class CreateUserActivity extends AppCompatActivity {
 
         // View
         view = findViewById(android.R.id.content);
+
+        // ImageView
+        profileImage = findViewById(R.id.profileImage);
 
         // EditTexts
         etNome = findViewById(R.id.etNome);
@@ -55,6 +63,7 @@ public class CreateUserActivity extends AppCompatActivity {
         // Buttons
         btnGoBack = findViewById(R.id.btnGoBack);
         btnCreateUser = findViewById(R.id.buttonAddUser);
+        btnChooseImage = findViewById(R.id.btnChooseImg);
 
         // Spinners
         spinnerSexo = findViewById(R.id.spinnerSexo);
@@ -106,6 +115,16 @@ public class CreateUserActivity extends AppCompatActivity {
         btnGoBack.setOnClickListener(v -> {
             finish();
         });
+
+        btnChooseImage.setOnClickListener(v -> {
+            ImageUtil.pickImageFromGallery(CreateUserActivity.this);
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        ImageUtil.handleImagePickResult(CreateUserActivity.this, requestCode, resultCode, data, profileImage);
     }
 
     public void setupSpinner(int arrayResource, Spinner spinner) {
@@ -133,7 +152,7 @@ public class CreateUserActivity extends AppCompatActivity {
         int tipoSpinnerSelectedPosition = spinnerTipo.getSelectedItemPosition();
 
         String dataNascimento = etDataNascimento.getText().toString().trim();
-        long dataNascimentoTimestamp = DateUtils.convertDateToTimestamp(dataNascimento);
+        long dataNascimentoTimestamp = DateUtil.convertDateToTimestamp(dataNascimento);
 
         Log.d("CREATEUSER", cpf);
 
@@ -158,7 +177,7 @@ public class CreateUserActivity extends AppCompatActivity {
         } else if (dataNascimento.isEmpty()) {
             etDataNascimento.setError("A sua data de nascimento precisa estar preenchida");
             return false;
-        } else if (!DateUtils.isOver18(dataNascimentoTimestamp)) {
+        } else if (!DateUtil.isOver18(dataNascimentoTimestamp)) {
             etDataNascimento.setError("Você precisa ter mais de 18 anos para se cadastrar");
             return false;
         } else if (sexSpinnerSelectedPosition == 0) {

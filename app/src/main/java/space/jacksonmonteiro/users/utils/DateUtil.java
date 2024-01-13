@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-public class DateUtils {
+public class DateUtil {
     public static long convertDateToTimestamp(String dateString) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
