@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">Users</string>
-    <string name="name_label">Nome:</string>
-    <string name="username_label">Nome de usuário:</string>
+    <string name="username_label">Usuário:</string>
     <string name="cpf_label">CPF</string>
     <string name="cnpj_label">CNPJ:</string>
 

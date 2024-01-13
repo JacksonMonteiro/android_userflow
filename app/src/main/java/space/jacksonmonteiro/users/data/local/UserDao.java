@@ -71,4 +71,39 @@ public class UserDao {
 
         return userList;
     }
+
+    public List<User> getUserByUsername(String username) {
+        List<User> userList = new ArrayList<>();
+
+        String query = "SELECT * FROM " + UserDatabase.TABLE_NAME + " WHERE " + UserDatabase.COLUMN_USERNAME + " = '" + username + "';";
+
+        Cursor cursor = database.getReadableDatabase().rawQuery(query, null);
+
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    User user = new User();
+                    user.setId(cursor.getInt(cursor.getColumnIndexOrThrow(UserDatabase.ID)));
+                    user.setNome(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_NOME)));
+                    user.setUsername(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_USERNAME)));
+                    user.setPassword(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_PASSWORD)));
+                    user.setFoto(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_FOTO)));
+                    user.setEndereco(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_ENDERECO)));
+                    user.setEmail(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_EMAIL)));
+                    user.setDataNascimento(cursor.getLong(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_DATA_NASCIMENTO)));
+                    user.setSexo(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_SEXO)));
+                    user.setTipo(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_TIPO)));
+                    user.setCpfCnpj(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_CPF_CNPJ)));
+
+                    userList.add(user);
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return userList;
+    }
 }

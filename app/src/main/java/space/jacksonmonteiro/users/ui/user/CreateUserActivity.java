@@ -138,7 +138,7 @@ public class CreateUserActivity extends AppCompatActivity implements CreateUserC
                 cpfCnpj = cnpj;
             }
 
-            User user = new User(nome, username, password, "", endereco, email, dataNascimentoTimestamp, sexo, tipo, cpfCnpj);
+            User user = new User(nome, username, password, ImageUtil.convertImageViewToBase64(profileImage), endereco, email, dataNascimentoTimestamp, sexo, tipo, cpfCnpj);
 
             if (validateForm(user)) {
                 presenter.insertUser(user);
@@ -247,7 +247,7 @@ public class CreateUserActivity extends AppCompatActivity implements CreateUserC
     }
 
     @Override
-    public void showInsertError() {
-        Snackbar.make(view, "Ocorreu um erro no cadastro do usuário. Por favor, tente novamente!", Snackbar.LENGTH_SHORT).show();
+    public void showInsertError(String message) {
+        Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
     }
 }

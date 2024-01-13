@@ -67,4 +67,32 @@ public class MaskUtil {
                 .replaceAll("[-]", "")
                 .replaceAll("[/]", "");
     }
+
+    public static String maskCpf(String cpf) {
+        StringBuilder cpfFormatted = new StringBuilder();
+        cpfFormatted.append(cpf.substring(0, 3));
+        cpfFormatted.append(".");
+        cpfFormatted.append(cpf.substring(3, 6));
+        cpfFormatted.append(".");
+        cpfFormatted.append(cpf.substring(6, 9));
+        cpfFormatted.append("-");
+        cpfFormatted.append(cpf.substring(9));
+
+        return cpfFormatted.toString();
+    }
+
+    public static String maskCnpj(String cnpj) {
+        StringBuilder cnpjFormatted = new StringBuilder();
+        cnpjFormatted.append(cnpj.substring(0, 2));
+        cnpjFormatted.append(".");
+        cnpjFormatted.append(cnpj.substring(2, 5));
+        cnpjFormatted.append(".");
+        cnpjFormatted.append(cnpj.substring(5, 8));
+        cnpjFormatted.append("/");
+        cnpjFormatted.append(cnpj.substring(8, 12));
+        cnpjFormatted.append("-");
+        cnpjFormatted.append(cnpj.substring(12));
+
+        return cnpjFormatted.toString();
+    }
 }

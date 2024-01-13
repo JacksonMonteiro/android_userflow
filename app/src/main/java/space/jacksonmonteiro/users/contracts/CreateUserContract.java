@@ -10,7 +10,7 @@ import space.jacksonmonteiro.users.models.User;
 public interface CreateUserContract {
     interface View {
         void handleUserInserted();
-        void showInsertError();
+        void showInsertError(String message);
     }
 
     interface Presenter {
