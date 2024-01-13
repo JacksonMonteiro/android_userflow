@@ -5,26 +5,23 @@ Created By Jackson Monteiro on 13/01/2024
 */
 
 import android.content.Context;
-import android.util.Log;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import space.jacksonmonteiro.MyApplication;
 import space.jacksonmonteiro.users.contracts.CreateOrEditUserContract;
-import space.jacksonmonteiro.users.data.local.UserDao;
 import space.jacksonmonteiro.users.models.User;
 import space.jacksonmonteiro.users.services.API;
 import space.jacksonmonteiro.users.services.BaseRetrofitClient;
 
 public class CreateOrEditUserPresenter implements CreateOrEditUserContract.Presenter {
-    private UserDao dao;
     private Context context;
     private CreateOrEditUserContract.View view;
 
     public CreateOrEditUserPresenter(Context context, CreateOrEditUserContract.View view) {
         this.context = context;
         this.view = view;
-        this.dao = new UserDao(context);
     }
 
     @Override
@@ -37,11 +34,11 @@ public class CreateOrEditUserPresenter implements CreateOrEditUserContract.Prese
             public void onResponse(Call<String> call, Response<String> response) {
                 if (response.isSuccessful()) {
                     try {
-                        User users = dao.getUserByUsername(user.getUsername());
+                        User users = MyApplication.getRoomDatabase().userDaoRoom().getUserByUsername(user.getUsername());
                         if (users != null) {
                             view.showInsertError("Esse usuário já existe no banco de dados, por favor, troque o nome de usuário e tente novamente");
                         } else {
-                            long result = dao.insertUser(user);
+                            long result = MyApplication.getRoomDatabase().userDaoRoom().insertUser(user);
                             if (result != -1) {
                                 view.handleUserInserted();
                             } else {
@@ -67,7 +64,7 @@ public class CreateOrEditUserPresenter implements CreateOrEditUserContract.Prese
     @Override
     public void updateUser(User user) {
         try {
-            int updatedRows = dao.updateUser(user);
+            int updatedRows = MyApplication.getRoomDatabase().userDaoRoom().updateUser(user);
             if (updatedRows > 0) {
                 view.handleUserInserted();
             } else {
@@ -82,7 +79,7 @@ public class CreateOrEditUserPresenter implements CreateOrEditUserContract.Prese
     @Override
     public void getUser(int id) {
         try {
-            User user = dao.getUserById(id);
+            User user = MyApplication.getRoomDatabase().userDaoRoom().getUserById(id);
             if (user != null) {
                 view.populateFields(user);
             }
