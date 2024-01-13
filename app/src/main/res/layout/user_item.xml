@@ -114,12 +114,14 @@
             android:layout_weight=".8">
 
             <ImageView
+                android:id="@+id/btnGotoEdit"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:src="@drawable/ic_edit" />
 
 
             <ImageView
+                android:id="@+id/btnGotoDelete"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginStart="8dp"

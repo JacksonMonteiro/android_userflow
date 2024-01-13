@@ -2,7 +2,11 @@ package space.jacksonmonteiro.users.ui.user;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,15 +24,18 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.Calendar;
 import java.util.Locale;
 
+import space.jacksonmonteiro.users.MainActivity;
 import space.jacksonmonteiro.users.R;
-import space.jacksonmonteiro.users.contracts.CreateUserContract;
+import space.jacksonmonteiro.users.contracts.CreateOrEditUserContract;
 import space.jacksonmonteiro.users.models.User;
-import space.jacksonmonteiro.users.presenters.CreateUserPresenter;
+import space.jacksonmonteiro.users.presenters.CreateOrEditUserPresenter;
 import space.jacksonmonteiro.users.utils.DateUtil;
 import space.jacksonmonteiro.users.utils.ImageUtil;
 import space.jacksonmonteiro.users.utils.MaskUtil;
 
-public class CreateUserActivity extends AppCompatActivity implements CreateUserContract.View {
+public class CreateOrEditUserActivity extends AppCompatActivity implements CreateOrEditUserContract.View {
+    private boolean isEdit = false;
+    private int userId = 0;
 
     private ImageView profileImage;
     private View view;
@@ -36,7 +43,7 @@ public class CreateUserActivity extends AppCompatActivity implements CreateUserC
     private Spinner spinnerSexo, spinnerTipo;
     private Button btnChooseImage, btnCreateUser, btnGoBack;
     private EditText etNome, etUsername, etPassword, etAddress, etEmail, etCpf, etCnpj, etDataNascimento;
-    private final CreateUserPresenter presenter = new CreateUserPresenter(this, this);
+    private final CreateOrEditUserPresenter presenter = new CreateOrEditUserPresenter(this, this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +73,7 @@ public class CreateUserActivity extends AppCompatActivity implements CreateUserC
 
         // Buttons
         btnGoBack = findViewById(R.id.btnGoBack);
-        btnCreateUser = findViewById(R.id.buttonAddUser);
+
         btnChooseImage = findViewById(R.id.btnChooseImg);
 
         // Spinners
@@ -106,9 +113,35 @@ public class CreateUserActivity extends AppCompatActivity implements CreateUserC
         });
 
         // Click Actions
+        // Verifica se o usuário passou o ID de um usuário para edição
+        Intent intent = getIntent();
+        if (intent.hasExtra(MainActivity.EXTRA_USER_ID)) {
+            int userId = intent.getIntExtra(MainActivity.EXTRA_USER_ID, -1);
+            presenter.getUser(userId);
+            isEdit = true;
+        }
+
         etDataNascimento.setOnClickListener(v -> {
             showDatePicker();
         });
+
+        btnGoBack.setOnClickListener(v -> {
+            finish();
+        });
+
+        btnChooseImage.setOnClickListener(v -> {
+            ImageUtil.pickImageFromGallery(CreateOrEditUserActivity.this);
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        btnCreateUser = findViewById(R.id.buttonAddUser);
+        if (isEdit) {
+            btnCreateUser.setText("Atualizar Usuário");
+        }
 
         btnCreateUser.setOnClickListener(v -> {
             // Fields
@@ -138,34 +171,73 @@ public class CreateUserActivity extends AppCompatActivity implements CreateUserC
                 cpfCnpj = cnpj;
             }
 
-            User user = new User(nome, username, password, ImageUtil.convertImageViewToBase64(profileImage), endereco, email, dataNascimentoTimestamp, sexo, tipo, cpfCnpj);
+            User user;
+            if (isEdit) {
+                user = new User(nome, username, password, ImageUtil.convertImageViewToBase64(profileImage), endereco, email, dataNascimentoTimestamp, sexo, tipo, cpfCnpj);
+                user.setId(userId);
+            } else {
+                user = new User(nome, username, password, ImageUtil.convertImageViewToBase64(profileImage), endereco, email, dataNascimentoTimestamp, sexo, tipo, cpfCnpj);
+            }
 
             if (validateForm(user)) {
-                presenter.insertUser(user);
+                if (isEdit) {
+                    presenter.updateUser(user);
+                } else {
+                    presenter.insertUser(user);
+                }
             }
-        });
-
-        btnGoBack.setOnClickListener(v -> {
-            finish();
-        });
-
-        btnChooseImage.setOnClickListener(v -> {
-            ImageUtil.pickImageFromGallery(CreateUserActivity.this);
         });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        ImageUtil.handleImagePickResult(CreateUserActivity.this, requestCode, resultCode, data, profileImage);
+        ImageUtil.handleImagePickResult(CreateOrEditUserActivity.this, requestCode, resultCode, data, profileImage);
     }
 
+    @Override
     public void setupSpinner(int arrayResource, Spinner spinner) {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, arrayResource, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
     }
 
+    @Override
+    public void populateFields(User user) {
+        userId = user.getId();
+
+        etNome.setText(user.getNome());
+        etUsername.setText(user.getUsername());
+        etPassword.setText(user.getPassword());
+        etAddress.setText(user.getEndereco());
+        etEmail.setText(user.getEmail());
+        etDataNascimento.setText(DateUtil.convertTimestampToDate(user.getDataNascimento()));
+
+        // Preencher os spinners
+        ArrayAdapter<CharSequence> sexoAdapter = (ArrayAdapter<CharSequence>) spinnerSexo.getAdapter();
+        int sexoPosition = sexoAdapter.getPosition(user.getSexo());
+        spinnerSexo.setSelection(sexoPosition);
+
+        ArrayAdapter<CharSequence> tipoAdapter = (ArrayAdapter<CharSequence>) spinnerTipo.getAdapter();
+        int tipoPosition = tipoAdapter.getPosition(user.getTipo());
+        spinnerTipo.setSelection(tipoPosition);
+
+        // Preencher CPF ou CNPJ
+        if (user.getTipo().equals("Pessoa Física")) {
+            etCpf.setText(MaskUtil.maskCpf(user.getCpfCnpj()));
+        } else {
+            etCnpj.setText(MaskUtil.maskCnpj(user.getCpfCnpj()));
+        }
+
+        // Preencher a imagem
+        if (!TextUtils.isEmpty(user.getFoto())) {
+            Bitmap bitmap = ImageUtil.convertBase64ToBitmap(user.getFoto());
+            profileImage.setImageBitmap(bitmap);
+        }
+
+    }
+
+    @Override
     public boolean validateForm(User user) {
         // RegEx
         String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$";
@@ -221,6 +293,7 @@ public class CreateUserActivity extends AppCompatActivity implements CreateUserC
         return true;
     }
 
+    @Override
     public void showDatePicker() {
         Calendar calendar = Calendar.getInstance();
 
@@ -246,8 +319,14 @@ public class CreateUserActivity extends AppCompatActivity implements CreateUserC
         finish();
     }
 
+
     @Override
     public void showInsertError(String message) {
         Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void finishActivity() {
+        new Handler(Looper.getMainLooper()).postDelayed(this::finish, 2000);
     }
 }

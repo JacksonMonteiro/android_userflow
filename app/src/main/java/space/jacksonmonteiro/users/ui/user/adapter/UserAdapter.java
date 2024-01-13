@@ -4,6 +4,7 @@ Created By Jackson Monteiro on 11/01/2024
 */
 
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +18,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import space.jacksonmonteiro.users.R;
+import space.jacksonmonteiro.users.listeners.OnUserClickListener;
 import space.jacksonmonteiro.users.models.User;
 import space.jacksonmonteiro.users.utils.ImageUtil;
 import space.jacksonmonteiro.users.utils.MaskUtil;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> {
     private List<User> users = new ArrayList<>();
+    private OnUserClickListener listener;
+
+    public UserAdapter(OnUserClickListener listener) {
+        this.listener = listener;
+    }
 
     @NonNull
     @Override
@@ -45,8 +52,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> {
             holder.tvCpfCnpjLabel.setText(R.string.cnpj_label);
             holder.tvCpfCnpj.setText(MaskUtil.maskCnpj(currentUser.getCpfCnpj()));
         }
+
         holder.profile.setImageBitmap(ImageUtil.convertBase64ToBitmap(currentUser.getFoto()));
 
+        holder.edit.setOnClickListener(v -> {
+            listener.gotoEdit(currentUser.getId());
+        });
     }
 
     @Override
@@ -64,7 +75,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> {
         private TextView tvUsername;
         private TextView tvCpfCnpjLabel;
         private TextView tvCpfCnpj;
-        private ImageView profile;
+        private ImageView profile, edit, delete;
 
         public UserHolder(@NonNull View itemView) {
             super(itemView);
@@ -74,6 +85,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> {
             tvCpfCnpj = itemView.findViewById(R.id.cpfCnpjValue);
             tvCpfCnpjLabel = itemView.findViewById(R.id.cpfCnpjLabel);
             profile = itemView.findViewById(R.id.profileImageItem);
+            edit = itemView.findViewById(R.id.btnGotoEdit);
+            delete = itemView.findViewById(R.id.btnGotoDelete);
         }
     }
 }

@@ -11,16 +11,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import space.jacksonmonteiro.users.contracts.MainContract;
+import space.jacksonmonteiro.users.listeners.OnUserClickListener;
 import space.jacksonmonteiro.users.models.User;
 import space.jacksonmonteiro.users.presenters.MainPresenter;
-import space.jacksonmonteiro.users.ui.user.CreateUserActivity;
+import space.jacksonmonteiro.users.ui.user.CreateOrEditUserActivity;
 import space.jacksonmonteiro.users.ui.user.adapter.UserAdapter;
 
-public class MainActivity extends AppCompatActivity implements MainContract.View {
+public class MainActivity extends AppCompatActivity implements MainContract.View, OnUserClickListener {
+    public static final String EXTRA_USER_ID = "USER_ID";
     private final MainPresenter presenter = new MainPresenter(this, this);
 
     private UserAdapter adapter;
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
         btnGoToAddUser = findViewById(R.id.btnGoToAddUser);
 
-        adapter = new UserAdapter();
+        adapter = new UserAdapter(this);
 
         RecyclerView recyclerView = findViewById(R.id.usersRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         recyclerView.setAdapter(adapter);
 
         btnGoToAddUser.setOnClickListener(v -> {
-            Intent intent = new Intent(this, CreateUserActivity.class);
+            Intent intent = new Intent(this, CreateOrEditUserActivity.class);
             startActivity(intent);
         });
     }
@@ -61,5 +62,17 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     public void showListError() {
         View view = findViewById(android.R.id.content);
         Snackbar.make(view, "Ocorreu um erro no cadastro do usuário. Por favor, tente novamente!", Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void gotoEdit(int userId) {
+        Intent intent = new Intent(this, CreateOrEditUserActivity.class);
+        intent.putExtra(EXTRA_USER_ID, userId);
+        startActivity(intent);
+    }
+
+    @Override
+    public void gotoDelete(int userId) {
+
     }
 }

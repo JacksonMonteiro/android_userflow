@@ -106,4 +106,62 @@ public class UserDao {
 
         return userList;
     }
+
+    public User getUserById(int id) {
+        User user = new User();
+
+        String query = "SELECT * FROM " + UserDatabase.TABLE_NAME + " WHERE " + UserDatabase.ID + " = " + id + ";";
+        Cursor cursor = database.getReadableDatabase().rawQuery(query, null);
+
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    user.setId(cursor.getInt(cursor.getColumnIndexOrThrow(UserDatabase.ID)));
+                    user.setNome(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_NOME)));
+                    user.setUsername(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_USERNAME)));
+                    user.setPassword(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_PASSWORD)));
+                    user.setFoto(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_FOTO)));
+                    user.setEndereco(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_ENDERECO)));
+                    user.setEmail(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_EMAIL)));
+                    user.setDataNascimento(cursor.getLong(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_DATA_NASCIMENTO)));
+                    user.setSexo(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_SEXO)));
+                    user.setTipo(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_TIPO)));
+                    user.setCpfCnpj(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_CPF_CNPJ)));
+
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return user;
+    }
+
+    public int updateUser(User user) {
+        ContentValues values = new ContentValues();
+        values.put(UserDatabase.COLUMN_NOME, user.getNome());
+        values.put(UserDatabase.COLUMN_USERNAME, user.getUsername());
+        values.put(UserDatabase.COLUMN_PASSWORD, user.getPassword());
+        values.put(UserDatabase.COLUMN_FOTO, user.getFoto());
+        values.put(UserDatabase.COLUMN_ENDERECO, user.getEndereco());
+        values.put(UserDatabase.COLUMN_EMAIL, user.getEmail());
+        values.put(UserDatabase.COLUMN_DATA_NASCIMENTO, user.getDataNascimento());
+        values.put(UserDatabase.COLUMN_SEXO, user.getSexo());
+        values.put(UserDatabase.COLUMN_TIPO, user.getTipo());
+        values.put(UserDatabase.COLUMN_CPF_CNPJ, user.getCpfCnpj());
+
+        String whereClause = UserDatabase.ID + " = ?";
+        String[] whereArgs = {String.valueOf(user.getId())};
+
+        return database.getWritableDatabase().update(UserDatabase.TABLE_NAME, values, whereClause, whereArgs);
+    }
+
+    public int deleteUser(int userId) {
+        String whereClause = UserDatabase.ID + " = ?";
+        String[] whereArgs = {String.valueOf(userId)};
+
+        return database.getWritableDatabase().delete(UserDatabase.TABLE_NAME, whereClause, whereArgs);
+    }
 }

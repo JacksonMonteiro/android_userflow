@@ -32,4 +32,10 @@ public class DateUtil {
         long ageInYears = TimeUnit.MILLISECONDS.toDays(differenceInMillis) / 365;
         return ageInYears >= 18;
     }
+
+    public static String convertTimestampToDate(long timestamp) {
+        Date date = new Date(timestamp);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        return dateFormat.format(date);
+    }
 }
