@@ -3,6 +3,8 @@ package space.jacksonmonteiro.users.ui.user;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -12,22 +14,29 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.Calendar;
 import java.util.Locale;
 
 import space.jacksonmonteiro.users.R;
 import space.jacksonmonteiro.users.utils.DateUtils;
+import space.jacksonmonteiro.users.utils.MaskUtil;
 
 public class CreateUserActivity extends AppCompatActivity {
+    private View view;
     private DatePickerDialog datePickerDialog;
     private Spinner spinnerSexo, spinnerTipo;
     private Button btnChooseImage, btnCreateUser, btnGoBack;
-    private EditText etNome, etUsername, etPassword, etAddress, etEmail, etCpfCnpj, etDataNascimento;
+    private EditText etNome, etUsername, etPassword, etAddress, etEmail, etCpf, etCnpj, etDataNascimento;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_user);
+
+        // View
+        view = findViewById(android.R.id.content);
 
         // EditTexts
         etNome = findViewById(R.id.etNome);
@@ -35,8 +44,13 @@ public class CreateUserActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etSenha);
         etAddress = findViewById(R.id.etEndereco);
         etEmail = findViewById(R.id.etEmail);
-        etCpfCnpj = findViewById(R.id.etCpfCnpj);
         etDataNascimento = findViewById(R.id.etDataNascimento);
+
+        etCpf = findViewById(R.id.etCpf);
+        etCpf.addTextChangedListener(MaskUtil.mask(etCpf, MaskUtil.FORMAT_CPF));
+
+        etCnpj = findViewById(R.id.etCnpj);
+        etCnpj.addTextChangedListener(MaskUtil.mask(etCnpj, MaskUtil.FORMAT_CNPJ));
 
         // Buttons
         btnGoBack = findViewById(R.id.btnGoBack);
@@ -44,7 +58,29 @@ public class CreateUserActivity extends AppCompatActivity {
 
         // Spinners
         spinnerSexo = findViewById(R.id.spinnerSexo);
+
         spinnerTipo = findViewById(R.id.spinnerTipo);
+        spinnerTipo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                int position = adapterView.getSelectedItemPosition();
+                switch (position) {
+                    case 2:
+                        etCpf.setVisibility(View.GONE);
+                        etCnpj.setVisibility(View.VISIBLE);
+                        break;
+                    default:
+                        etCpf.setVisibility(View.VISIBLE);
+                        etCnpj.setVisibility(View.GONE);
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         setupSpinner(R.array.sexo, spinnerSexo);
         setupSpinner(R.array.tipo, spinnerTipo);
@@ -74,7 +110,6 @@ public class CreateUserActivity extends AppCompatActivity {
 
     public void setupSpinner(int arrayResource, Spinner spinner) {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, arrayResource, android.R.layout.simple_spinner_item);
-
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
     }
@@ -90,17 +125,22 @@ public class CreateUserActivity extends AppCompatActivity {
         String password = etPassword.getText().toString().trim();
         String endereco = etAddress.getText().toString().trim();
         String email = etEmail.getText().toString().trim();
-        String cpfCnpj = etCpfCnpj.getText().toString().trim();
+        String cpf = MaskUtil.unmask(etCpf.getText().toString().trim());
+        String cnpj = MaskUtil.unmask(etCnpj.getText().toString().trim());
+
+        // Spinners
+        int sexSpinnerSelectedPosition = spinnerSexo.getSelectedItemPosition();
+        int tipoSpinnerSelectedPosition = spinnerTipo.getSelectedItemPosition();
 
         String dataNascimento = etDataNascimento.getText().toString().trim();
         long dataNascimentoTimestamp = DateUtils.convertDateToTimestamp(dataNascimento);
 
-        Log.d("CREATEUSER", password.matches(passwordRegex) + "");
+        Log.d("CREATEUSER", cpf);
 
         if (nome.length() < 30) {
             etNome.setError("Seu nome deve ter no mínimo 30 caracteres");
             return false;
-        } else if (username.isEmpty() || username.length() < 4) {
+        } else if (username.isEmpty()) {
             etUsername.setError("Seu nome de usuário não pode estar vazio e deve ter no mínimo 4 caracteres");
             return false;
         } else if (!password.matches(passwordRegex)) {
@@ -115,14 +155,23 @@ public class CreateUserActivity extends AppCompatActivity {
         } else if (!email.matches(emailRegex)) {
             etEmail.setError("O formato do seu e-mail está inválido. Por favor, corrija e tente novamente");
             return false;
-        } else if (cpfCnpj.length() != 8 || cpfCnpj.length() != 14) {
-            etCpfCnpj.setError("deve digitar um CPF (8 números) ou CNPJ (14 números)");
-            return false;
         } else if (dataNascimento.isEmpty()) {
             etDataNascimento.setError("A sua data de nascimento precisa estar preenchida");
             return false;
         } else if (!DateUtils.isOver18(dataNascimentoTimestamp)) {
             etDataNascimento.setError("Você precisa ter mais de 18 anos para se cadastrar");
+            return false;
+        } else if (sexSpinnerSelectedPosition == 0) {
+            Snackbar.make(view, "Você precisa informar seu sexo", Snackbar.LENGTH_SHORT).show();
+            return false;
+        } else if (tipoSpinnerSelectedPosition == 0) {
+            Snackbar.make(view, "Você precisa informar se é pessoa física ou jurídica", Snackbar.LENGTH_SHORT).show();
+            return false;
+        } else if (tipoSpinnerSelectedPosition == 1 && cpf.length() != 11) {
+            etCpf.setError("Você precisa informar um CPF (11 dígitos)");
+            return false;
+        } else if (tipoSpinnerSelectedPosition == 2 && cnpj.length() != 14) {
+            etCnpj.setError("Você precisa informar um CNPJ (14 dígitos)");
             return false;
         }
 
@@ -142,6 +191,7 @@ public class CreateUserActivity extends AppCompatActivity {
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 String formattedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d", day, month + 1, year);
                 etDataNascimento.setText(formattedDate);
+                etDataNascimento.setError(null);
             }
         }, year, month, day);
 

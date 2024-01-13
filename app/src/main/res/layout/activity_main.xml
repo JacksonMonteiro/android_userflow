@@ -14,6 +14,7 @@
         tools:listitem="@layout/user_item"></androidx.recyclerview.widget.RecyclerView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:backgroundTint="@color/green"
         android:id="@+id/btnGoToAddUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
