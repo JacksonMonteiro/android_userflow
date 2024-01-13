@@ -5,17 +5,28 @@ Created By Jackson Monteiro on 11/01/2024
 */
 
 
+import com.google.gson.annotations.SerializedName;
+
 public class User {
     private int id;
+    @SerializedName("nome")
     private String nome;
+    @SerializedName("username")
     private String username;
+    @SerializedName("password")
     private String password;
+    @SerializedName("foto")
     private String foto;
+    @SerializedName("endereco")
     private String endereco;
+    @SerializedName("email")
     private String email;
+    @SerializedName("dataNascimento")
     private long dataNascimento;
+    @SerializedName("sexo")
     private String sexo;
     private String tipo;
+    @SerializedName("cpfCnpj")
     private String cpfCnpj;
 
     public User() {

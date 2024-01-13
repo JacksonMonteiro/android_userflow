@@ -72,8 +72,8 @@ public class UserDao {
         return userList;
     }
 
-    public List<User> getUserByUsername(String username) {
-        List<User> userList = new ArrayList<>();
+    public User getUserByUsername(String username) {
+        User user = null;
 
         String query = "SELECT * FROM " + UserDatabase.TABLE_NAME + " WHERE " + UserDatabase.COLUMN_USERNAME + " = '" + username + "';";
 
@@ -81,8 +81,8 @@ public class UserDao {
 
         try {
             if (cursor != null && cursor.moveToFirst()) {
+                user = new User();
                 do {
-                    User user = new User();
                     user.setId(cursor.getInt(cursor.getColumnIndexOrThrow(UserDatabase.ID)));
                     user.setNome(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_NOME)));
                     user.setUsername(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_USERNAME)));
@@ -95,7 +95,6 @@ public class UserDao {
                     user.setTipo(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_TIPO)));
                     user.setCpfCnpj(cursor.getString(cursor.getColumnIndexOrThrow(UserDatabase.COLUMN_CPF_CNPJ)));
 
-                    userList.add(user);
                 } while (cursor.moveToNext());
             }
         } finally {
@@ -104,7 +103,7 @@ public class UserDao {
             }
         }
 
-        return userList;
+        return user;
     }
 
     public User getUserById(int id) {

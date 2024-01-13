@@ -5,12 +5,16 @@ Created By Jackson Monteiro on 13/01/2024
 */
 
 import android.content.Context;
+import android.util.Log;
 
-import java.util.List;
-
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import space.jacksonmonteiro.users.contracts.CreateOrEditUserContract;
 import space.jacksonmonteiro.users.data.local.UserDao;
 import space.jacksonmonteiro.users.models.User;
+import space.jacksonmonteiro.users.services.API;
+import space.jacksonmonteiro.users.services.BaseRetrofitClient;
 
 public class CreateOrEditUserPresenter implements CreateOrEditUserContract.Presenter {
     private UserDao dao;
@@ -25,23 +29,39 @@ public class CreateOrEditUserPresenter implements CreateOrEditUserContract.Prese
 
     @Override
     public void insertUser(User user) {
-        try {
-            List<User> users = dao.getUserByUsername(user.getUsername());
-            if (users.size() > 0) {
-                view.showInsertError("Esse usuário já existe no banco de dados, por favor, troque o nome de usuário e tente novamente");
-            } else {
-                long result = dao.insertUser(user);
+        API api = BaseRetrofitClient.createService(API.class, context);
+        Call<String> call = api.sendUser(user);
 
-                if (result != -1) {
-                    view.handleUserInserted();
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()) {
+                    try {
+                        User users = dao.getUserByUsername(user.getUsername());
+                        if (users != null) {
+                            view.showInsertError("Esse usuário já existe no banco de dados, por favor, troque o nome de usuário e tente novamente");
+                        } else {
+                            long result = dao.insertUser(user);
+                            if (result != -1) {
+                                view.handleUserInserted();
+                            } else {
+                                view.showInsertError("Não foi possível cadastrar o usuário. Por favor, tente novamente");
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        view.showInsertError("Não foi possível cadastrar o usuário. Por favor, tente novamente! - " + e.getMessage());
+                    }
                 } else {
-                    view.showInsertError("Não foi possível cadastrar o usuário. Por favor, tente novamente");
+                    view.showInsertError("Ocorreu um erro no envio do usuário para o serviço, portanto, ele não foi cadastrado no banco. Tente novamente");
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            view.showInsertError("Não foi possível cadastrar o usuário. Por favor, tente novamente! - " + e.getMessage());
-        }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                view.showInsertError("Ocorreu um erro no envio do usuário para o serviço, portanto, ele não foi cadastrado no banco. Tente novamente");
+            }
+        });
     }
 
     @Override
