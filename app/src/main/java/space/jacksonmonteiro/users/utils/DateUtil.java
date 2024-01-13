@@ -1,7 +1,6 @@
 package space.jacksonmonteiro.users.utils;
 /*
 Created By Jackson Monteiro on 12/01/2024
-Copyright (c) 2024 GFX Consultoria
 */
 
 

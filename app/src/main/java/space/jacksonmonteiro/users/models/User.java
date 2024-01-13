@@ -5,28 +5,23 @@ Created By Jackson Monteiro on 11/01/2024
 */
 
 
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-
-import java.util.Date;
-
-@Entity(tableName = "users")
 public class User {
-    @PrimaryKey(autoGenerate = true)
     private int id;
-
     private String nome;
     private String username;
     private String password;
     private String foto;
     private String endereco;
     private String email;
-    private Date dataNascimento;
+    private long dataNascimento;
     private String sexo;
     private String tipo;
     private String cpfCnpj;
 
-    public User(String nome, String username, String password, String foto, String endereco, String email, Date dataNascimento, String sexo, String tipo, String cpfCnpj) {
+    public User() {
+    }
+
+    public User(String nome, String username, String password, String foto, String endereco, String email, long dataNascimento, String sexo, String tipo, String cpfCnpj) {
         this.nome = nome;
         this.username = username;
         this.password = password;
@@ -72,7 +67,7 @@ public class User {
     }
 
     public String getFoto() {
-        return foto;
+        return this.foto;
     }
 
     public void setFoto(String foto) {
@@ -95,11 +90,11 @@ public class User {
         this.email = email;
     }
 
-    public Date getDataNascimento() {
+    public long getDataNascimento() {
         return dataNascimento;
     }
 
-    public void setDataNascimento(Date dataNascimento) {
+    public void setDataNascimento(long dataNascimento) {
         this.dataNascimento = dataNascimento;
     }
 

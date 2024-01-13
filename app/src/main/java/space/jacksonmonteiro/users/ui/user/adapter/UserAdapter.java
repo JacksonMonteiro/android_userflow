@@ -1,7 +1,6 @@
 package space.jacksonmonteiro.users.ui.user.adapter;
 /*
 Created By Jackson Monteiro on 11/01/2024
-Copyright (c) 2024 GFX Consultoria
 */
 
 
