@@ -3,6 +3,7 @@
     <string name="username_label">Usuário:</string>
     <string name="cpf_label">CPF</string>
     <string name="cnpj_label">CNPJ:</string>
+    <string name="etfilter_hint">Filtrar pelo nome...</string>
 
     <string-array name="sexo">
         <item>Selecione seu Sexo</item>

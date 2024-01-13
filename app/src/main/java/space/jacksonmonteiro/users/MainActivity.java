@@ -2,7 +2,10 @@ package space.jacksonmonteiro.users;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.EditText;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import space.jacksonmonteiro.users.contracts.MainContract;
@@ -23,8 +27,10 @@ import space.jacksonmonteiro.users.ui.user.adapter.UserAdapter;
 
 public class MainActivity extends AppCompatActivity implements MainContract.View, OnUserClickListener {
     public static final String EXTRA_USER_ID = "USER_ID";
-    private final MainPresenter presenter = new MainPresenter(this, this);
 
+    private final MainPresenter presenter = new MainPresenter(this, this);
+    private EditText etFilter;
+    private ArrayList<User> usersList;
     private UserAdapter adapter;
     private FloatingActionButton btnGoToAddUser;
 
@@ -36,11 +42,36 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         btnGoToAddUser = findViewById(R.id.btnGoToAddUser);
 
         adapter = new UserAdapter(this);
-
         RecyclerView recyclerView = findViewById(R.id.usersRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
+
+        // Name Filter
+        etFilter = findViewById(R.id.etFilter);
+        etFilter.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                ArrayList<User> filteredList = new ArrayList<>();
+                String filterStr = charSequence.toString();
+
+                for (User user : usersList) {
+                    if (user.getNome().toLowerCase().contains(filterStr.toLowerCase())) {
+                        filteredList.add(user);
+                    }
+                }
+
+                adapter.setUsers(filteredList);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
 
         btnGoToAddUser.setOnClickListener(v -> {
             Intent intent = new Intent(this, CreateOrEditUserActivity.class);
@@ -56,8 +87,10 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @Override
     public void setUserList(List<User> users) {
+        usersList = new ArrayList<>(users);
         adapter.setUsers(users);
     }
+
 
     @Override
     public void showListError() {
