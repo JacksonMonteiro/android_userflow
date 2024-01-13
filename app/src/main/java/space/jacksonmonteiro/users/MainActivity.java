@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -65,6 +66,17 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     }
 
     @Override
+    public void showDeleteError() {
+        View view = findViewById(android.R.id.content);
+        Snackbar.make(view, "Ocorreu um erro ao tentar excluir o usuário. Por favor, tente novamente!", Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void handleUserDeleted() {
+        onResume();
+    }
+
+    @Override
     public void gotoEdit(int userId) {
         Intent intent = new Intent(this, CreateOrEditUserActivity.class);
         intent.putExtra(EXTRA_USER_ID, userId);
@@ -73,6 +85,25 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @Override
     public void gotoDelete(int userId) {
-
+        showDeleteConfirmationDialog(userId);
     }
+
+    private void showDeleteConfirmationDialog(int userId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirmar exclusão");
+        builder.setMessage("Tem certeza que deseja excluir este usuário?");
+
+
+        builder.setPositiveButton("Sim", (dialog, which) -> {
+            presenter.deleteUser(userId);
+        });
+
+        builder.setNegativeButton("Não", (dialog, which) -> {
+
+        });
+
+        // Mostra o AlertDialog
+        builder.show();
+    }
+
 }

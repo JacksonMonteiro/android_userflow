@@ -7,7 +7,6 @@ Created By Jackson Monteiro on 13/01/2024
 
 import android.content.Context;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import space.jacksonmonteiro.users.contracts.MainContract;
@@ -32,6 +31,22 @@ public class MainPresenter implements MainContract.Presenter {
 
             if (userList != null && userList.size() > 0) {
                 view.setUserList(userList);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            view.showListError();
+        }
+    }
+
+    @Override
+    public void deleteUser(int userId) {
+        try {
+            int rowsAffected = dao.deleteUser(userId);
+
+            if (rowsAffected > 0) {
+                view.handleUserDeleted();
+            } else {
+                view.showDeleteError();
             }
         } catch (Exception e) {
             e.printStackTrace();

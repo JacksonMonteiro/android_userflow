@@ -4,7 +4,6 @@ Created By Jackson Monteiro on 11/01/2024
 */
 
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +56,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder> {
 
         holder.edit.setOnClickListener(v -> {
             listener.gotoEdit(currentUser.getId());
+        });
+
+        holder.delete.setOnClickListener(v -> {
+            listener.gotoDelete(currentUser.getId());
         });
     }
 
