@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Users</string>
+    <string name="app_name">User Flow</string>
     <string name="username_label">Usuário:</string>
     <string name="cpf_label">CPF</string>
     <string name="cnpj_label">CNPJ:</string>
