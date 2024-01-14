@@ -30,29 +30,36 @@ Um projeto básico que implementa um CRUD de usuários. Desenvolvido em Java, co
 ## Estrutura do Projeto
 O projeto é organizado de maneira modularizada e segue uma estrutura clara para facilitar a manutenção e expansão. Abaixo está uma visão geral dos principais diretórios e suas responsabilidades:
 
-model:
+**model**:
+
 Contém as classes de modelo que representam a estrutura de dados do aplicativo.
 
-services:
+**services**:
+
 Armazena os arquivos relacionados ao Retrofit e configuração de consumo de API. 
 
-data/local:
+**data/local**:
+
 Este diretório local contém os arquivos relacionados ao banco de dados local. Atualmente, você pode encontrar aqui a implementação usando ROOM.
 
-UI:
+**UI**:
+
 Contém subdiretórios para interfaces do usuário, adapters e outros componentes visuais.
     ui/user: Contém as telas e componentes relacionados aos usuários.
 
-presenters:
+**presenters**:
+
 Armazena os presenters, que são responsáveis por intermediar as interações entre a UI e as regras de negócios.
 
-utils:
+**utils**:
 Contém métodos utilitários que podem ser reutilizados em todo o projeto para manter a consistência e facilitar a manutenção.
 
-contracts:
+**contracts**:
+
 Inclui interfaces ou classes abstratas que definem contratos entre os componentes do MVP (Model-View-Presenter).
 
-listeners:
+**listeners**:
+
 Contém classes ou interfaces que representam listeners para operações assíncronas ou eventos específicos, permitindo a execução de ações após essas operações.
 
 A organização modular facilita a navegação e a compreensão do código, promovendo boas práticas de desenvolvimento e facilitando a colaboração entre os membros envolvidos no projeto. Essa estrutura oferece flexibilidade para futuras expansões e manutenções do projeto.
