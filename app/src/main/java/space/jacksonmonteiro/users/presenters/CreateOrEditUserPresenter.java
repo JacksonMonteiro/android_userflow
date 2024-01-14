@@ -100,13 +100,20 @@ public class CreateOrEditUserPresenter implements CreateOrEditUserContract.Prese
 
         @Override
         protected Integer doInBackground(Void... voids) {
-            return MyApplication.getRoomDatabase().userDaoRoom().updateUser(user);
+            User existingUser = MyApplication.getRoomDatabase().userDaoRoom().getUserByUsername(user.getUsername());
+            if (existingUser != null) {
+                return -1;
+            } else {
+                return MyApplication.getRoomDatabase().userDaoRoom().updateUser(user);
+            }
         }
 
         @Override
         protected void onPostExecute(Integer updatedRows) {
             if (updatedRows > 0) {
                 view.handleUserInserted();
+            } else if (updatedRows == -1) {
+                view.showInsertError("O nome de usuário já existe. troque o nome digitado e tente novamente");
             } else {
                 view.showInsertError("Ocorreu um erro ao atualizar o usuário. Tente novamente");
             }
