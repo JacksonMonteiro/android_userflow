@@ -37,7 +37,7 @@ public class MainPresenter implements MainContract.Presenter {
     @Override
     public void deleteUser(int userId) {
         try {
-            new GetUserAsyncTask(view, userId).execute();
+            new DeleteUserAsyncTask(view, userId).execute();
         } catch (Exception e) {
             e.printStackTrace();
             view.showListError();
@@ -58,48 +58,22 @@ public class MainPresenter implements MainContract.Presenter {
 
         @Override
         protected void onPostExecute(List<User> userList) {
-            if (userList != null && !userList.isEmpty()) {
-                view.setUserList(userList);
-            }
-        }
-    }
-
-    private static class GetUserAsyncTask extends AsyncTask<Void, Void, User> {
-        private final MainContract.View view;
-        private final int userId;
-
-        public GetUserAsyncTask(MainContract.View view, int userId) {
-            this.view = view;
-            this.userId = userId;
-        }
-
-        @Override
-        protected User doInBackground(Void... voids) {
-            return MyApplication.getRoomDatabase().userDaoRoom().getUserById(userId);
-        }
-
-        @Override
-        protected void onPostExecute(User user) {
-            if (user != null) {
-                new DeleteUserAsyncTask(view, user).execute();
-            } else {
-                view.showDeleteError();
-            }
+            view.setUserList(userList);
         }
     }
 
     private static class DeleteUserAsyncTask extends AsyncTask<Void, Void, Void> {
         private final MainContract.View view;
-        private final User user;
+        private final int userId;
 
-        public DeleteUserAsyncTask(MainContract.View view, User user) {
+        public DeleteUserAsyncTask(MainContract.View view, int userId) {
             this.view = view;
-            this.user = user;
+            this.userId = userId;
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-            MyApplication.getRoomDatabase().userDaoRoom().deleteUser(user);
+            MyApplication.getRoomDatabase().userDaoRoom().deleteUser(userId);
             return null;
         }
 

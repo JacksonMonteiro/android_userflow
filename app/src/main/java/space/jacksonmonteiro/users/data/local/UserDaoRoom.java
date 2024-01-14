@@ -5,7 +5,6 @@ Created By Jackson Monteiro on 13/01/2024
 */
 
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
@@ -31,6 +30,6 @@ public interface UserDaoRoom {
     @Update
     int updateUser(User user);
 
-    @Delete
-    int deleteUser(User user);
+    @Query("DELETE FROM users WHERE id = :id")
+    int deleteUser(int id);
 }

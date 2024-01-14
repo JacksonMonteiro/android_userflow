@@ -64,16 +64,16 @@ public class CreateOrEditUserPresenter implements CreateOrEditUserContract.Prese
                     User existingUser = MyApplication.getRoomDatabase().userDaoRoom().getUserByUsername(user.getUsername());
 
                     if (existingUser != null) {
-                        return -1L;  // User with the same username already exists
+                        return -1L;
                     } else {
                         return MyApplication.getRoomDatabase().userDaoRoom().insertUser(user);
                     }
                 } else {
-                    return -1L;  // Error in sending user to the service
+                    return -2L;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                return -1L;  // Exception during API call
+                return -2L;
             }
         }
 
@@ -81,7 +81,9 @@ public class CreateOrEditUserPresenter implements CreateOrEditUserContract.Prese
         protected void onPostExecute(Long result) {
             if (result != -1) {
                 view.handleUserInserted();
-            } else {
+            } else if (result == -1) {
+                view.showInsertError("O nome de usuário já existe. troque o nome digitado e tente novamente");
+            } else if (result == -2) {
                 view.showInsertError("Não foi possível cadastrar o usuário. Por favor, tente novamente");
             }
         }
