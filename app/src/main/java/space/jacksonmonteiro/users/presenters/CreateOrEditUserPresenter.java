@@ -5,9 +5,11 @@ Created By Jackson Monteiro on 13/01/2024
 */
 
 import android.content.Context;
+import android.os.AsyncTask;
+
+import java.io.IOException;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 import space.jacksonmonteiro.MyApplication;
 import space.jacksonmonteiro.users.contracts.CreateOrEditUserContract;
@@ -26,67 +28,111 @@ public class CreateOrEditUserPresenter implements CreateOrEditUserContract.Prese
 
     @Override
     public void insertUser(User user) {
-        API api = BaseRetrofitClient.createService(API.class, context);
-        Call<String> call = api.sendUser(user);
-
-        call.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                if (response.isSuccessful()) {
-                    try {
-                        User users = MyApplication.getRoomDatabase().userDaoRoom().getUserByUsername(user.getUsername());
-                        if (users != null) {
-                            view.showInsertError("Esse usuário já existe no banco de dados, por favor, troque o nome de usuário e tente novamente");
-                        } else {
-                            long result = MyApplication.getRoomDatabase().userDaoRoom().insertUser(user);
-                            if (result != -1) {
-                                view.handleUserInserted();
-                            } else {
-                                view.showInsertError("Não foi possível cadastrar o usuário. Por favor, tente novamente");
-                            }
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        view.showInsertError("Não foi possível cadastrar o usuário. Por favor, tente novamente! - " + e.getMessage());
-                    }
-                } else {
-                    view.showInsertError("Ocorreu um erro no envio do usuário para o serviço, portanto, ele não foi cadastrado no banco. Tente novamente");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                view.showInsertError("Ocorreu um erro no envio do usuário para o serviço, portanto, ele não foi cadastrado no banco. Tente novamente");
-            }
-        });
+        new InsertUserAsyncTask(view, user, context).execute();
     }
 
     @Override
     public void updateUser(User user) {
-        try {
-            int updatedRows = MyApplication.getRoomDatabase().userDaoRoom().updateUser(user);
+        new UpdateUserAsyncTask(view, user).execute();
+    }
+
+    @Override
+    public void getUser(int id) {
+        new GetUserAsyncTask(view, id).execute();
+    }
+
+    private static class InsertUserAsyncTask extends AsyncTask<Void, Void, Long> {
+        private final CreateOrEditUserContract.View view;
+        private final User user;
+        private final Context context;
+
+        public InsertUserAsyncTask(CreateOrEditUserContract.View view, User user, Context context) {
+            this.view = view;
+            this.user = user;
+            this.context = context;
+        }
+
+        @Override
+        protected Long doInBackground(Void... voids) {
+            API api = BaseRetrofitClient.createService(API.class, context);
+            Call<String> call = api.sendUser(user);
+
+            try {
+                Response<String> response = call.execute();
+
+                if (response.isSuccessful()) {
+                    User existingUser = MyApplication.getRoomDatabase().userDaoRoom().getUserByUsername(user.getUsername());
+
+                    if (existingUser != null) {
+                        return -1L;  // User with the same username already exists
+                    } else {
+                        return MyApplication.getRoomDatabase().userDaoRoom().insertUser(user);
+                    }
+                } else {
+                    return -1L;  // Error in sending user to the service
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return -1L;  // Exception during API call
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Long result) {
+            if (result != -1) {
+                view.handleUserInserted();
+            } else {
+                view.showInsertError("Não foi possível cadastrar o usuário. Por favor, tente novamente");
+            }
+        }
+    }
+
+    private static class UpdateUserAsyncTask extends AsyncTask<Void, Void, Integer> {
+        private final CreateOrEditUserContract.View view;
+        private final User user;
+
+        public UpdateUserAsyncTask(CreateOrEditUserContract.View view, User user) {
+            this.view = view;
+            this.user = user;
+        }
+
+        @Override
+        protected Integer doInBackground(Void... voids) {
+            return MyApplication.getRoomDatabase().userDaoRoom().updateUser(user);
+        }
+
+        @Override
+        protected void onPostExecute(Integer updatedRows) {
             if (updatedRows > 0) {
                 view.handleUserInserted();
             } else {
                 view.showInsertError("Ocorreu um erro ao atualizar o usuário. Tente novamente");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            view.showInsertError("Ocorreu um erro ao atualizar o usuário. Tente novamente");
         }
     }
 
-    @Override
-    public void getUser(int id) {
-        try {
-            User user = MyApplication.getRoomDatabase().userDaoRoom().getUserById(id);
+    private static class GetUserAsyncTask extends AsyncTask<Void, Void, User> {
+        private final CreateOrEditUserContract.View view;
+        private final int userId;
+
+        public GetUserAsyncTask(CreateOrEditUserContract.View view, int userId) {
+            this.view = view;
+            this.userId = userId;
+        }
+
+        @Override
+        protected User doInBackground(Void... voids) {
+            return MyApplication.getRoomDatabase().userDaoRoom().getUserById(userId);
+        }
+
+        @Override
+        protected void onPostExecute(User user) {
             if (user != null) {
                 view.populateFields(user);
+            } else {
+                view.showInsertError("Não foi possível recuperar os dados do usuário para edição. Você será removido da tela em 2 segundos");
+                view.finishActivity();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            view.showInsertError("Não foi possível recuperar os dados do usuário para edição. Você será removido da tela em 2 segundos");
-            view.finishActivity();
         }
     }
 }
