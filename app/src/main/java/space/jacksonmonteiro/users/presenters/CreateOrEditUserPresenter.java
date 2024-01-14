@@ -11,7 +11,7 @@ import java.io.IOException;
 
 import retrofit2.Call;
 import retrofit2.Response;
-import space.jacksonmonteiro.MyApplication;
+import space.jacksonmonteiro.users.MyApplication;
 import space.jacksonmonteiro.users.contracts.CreateOrEditUserContract;
 import space.jacksonmonteiro.users.models.User;
 import space.jacksonmonteiro.users.services.API;

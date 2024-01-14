@@ -10,7 +10,7 @@ import android.os.AsyncTask;
 
 import java.util.List;
 
-import space.jacksonmonteiro.MyApplication;
+import space.jacksonmonteiro.users.MyApplication;
 import space.jacksonmonteiro.users.contracts.MainContract;
 import space.jacksonmonteiro.users.models.User;
 

@@ -1,4 +1,4 @@
-package space.jacksonmonteiro;
+package space.jacksonmonteiro.users;
 
 /*
 Created By Jackson Monteiro on 13/01/2024
