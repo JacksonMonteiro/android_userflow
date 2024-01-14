@@ -5,28 +5,45 @@ Created By Jackson Monteiro on 11/01/2024
 */
 
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import com.google.gson.annotations.SerializedName;
 
+@Entity(tableName = "users")
 public class User {
+    @PrimaryKey(autoGenerate = true)
     private int id;
     @SerializedName("nome")
+    @ColumnInfo(name = "nome")
     private String nome;
+
     @SerializedName("username")
+    @ColumnInfo(name = "username")
     private String username;
     @SerializedName("password")
+    @ColumnInfo(name = "password")
     private String password;
     @SerializedName("foto")
+    @ColumnInfo(name = "foto")
     private String foto;
     @SerializedName("endereco")
+    @ColumnInfo(name = "endereco")
     private String endereco;
     @SerializedName("email")
+    @ColumnInfo(name = "email")
     private String email;
     @SerializedName("dataNascimento")
+    @ColumnInfo(name = "dataNascimento")
     private long dataNascimento;
     @SerializedName("sexo")
+    @ColumnInfo(name = "sexo")
     private String sexo;
+    @ColumnInfo(name = "tipo")
     private String tipo;
     @SerializedName("cpfCnpj")
+    @ColumnInfo(name = "cpfCnpj")
     private String cpfCnpj;
 
     public User() {
